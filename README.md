@@ -1,28 +1,32 @@
 # Mapbox Attribute Module — README
 
-*Version v10-lite (May 21 2025)*
+*Version v1.0.0 (May 22 2025)*
 
-This document explains how to embed **multiple, CMS-driven Mapbox maps** in Webflow (or any HTML page) using nothing but data-attributes—plus **optional pin clustering** and **custom zoom buttons**.
+Embed **multiple, CMS-driven Mapbox maps** in Webflow (or any HTML page) using nothing but data-attributes.
+Key extras in v1:
+
+* **Custom pop-ups** that clone your CMS element intact (`data-map-popup="custom"`).
+* **Auto-fit zoom cap** (`fitBoundsMaxZoom` / `data-map-maxzoom`) so single-pin maps don’t zoom too far.
+* Everything from earlier builds: cooperative gestures, optional clustering, custom zoom buttons, etc.
 
 ---
 
-## 1  — Prerequisites
+## 1 — Prerequisites
 
 ```html
 <!-- Mapbox GL assets – include ONCE per page -->
-<link
-  rel="stylesheet"
-  href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css">
+<link rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
 ```
 
 ---
 
-# 2  — Global configuration (put in `<head>` **before** the module)
+## 2 — Global configuration (in `<head>` **before** the module)
 
 ```html
 <script>
-  /* Required: public access token */
+  /* Required */
   window.MAPBOX_ACCESS_TOKEN = 'pk.•••';
 
   /* Optional site-wide defaults */
@@ -30,6 +34,7 @@ This document explains how to embed **multiple, CMS-driven Mapbox maps** in Webf
     style: 'mapbox://styles/mapbox/light-v11',
     zoom: 9,
     fitBoundsPadding: 80,
+    fitBoundsMaxZoom: 13,        // NEW
     /* clustering defaults */
     cluster: false,
     clusterRadius: 70,
@@ -40,96 +45,111 @@ This document explains how to embed **multiple, CMS-driven Mapbox maps** in Webf
 
 ---
 
-## 3  — Add the **module script before body**
+## 3 — Add the **module script before </body>**
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/SimonKefas/custom-mapbox-map@latest/script.js"></script>
 ```
 
----
-
-## 4  — Markup cheat-sheet
-
-| Where            | Attribute                      | Value / Purpose                           |
-| ---------------- | ------------------------------ | ----------------------------------------- |
-| **Map wrapper**  | `data-mapbox`                  | identifies an element as a map            |
-|                  | `style="height:400px"`         | give it a height (CSS)                    |
-|                  | `data-map-style`               | Mapbox style URL (override)               |
-|                  | `data-map-zoom`                | starting zoom (number)                    |
-|                  | `data-map-center`              | `lat,lng` to skip auto-fit                |
-|                  | `data-map-token`               | override token for this map               |
-|                  | `data-map-defaults`            | JSON blob to tweak defaults per map       |
-|                  | `data-map-cluster`             | **enable pin clustering**                 |
-|                  | `data-map-nav`                 | inject Mapbox’s native zoom buttons       |
-| **Pin item**     | `data-pin-lat`, `data-pin-lng` | **required** coordinates                  |
-|                  | `data-pin-icon`                | custom icon URL                           |
-|                  | `data-pin-popup-align`         | `top` `bottom` `left` `right`…            |
-| Inner HTML       | any markup → popup content     |                                           |
-| **Zoom buttons** | `data-map-zoom="in"` / `out"`  | triggers `map.zoomIn()` / `map.zoomOut()` |
+*(Or paste the raw script directly.)*
 
 ---
 
-### Example (copy–paste)
+## 4 — Markup cheat-sheet
+
+| Where            | Attribute                       | Purpose / Example                                                                 |
+| ---------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| **Map wrapper**  | `data-mapbox`                   | identifies an element as a map                                                    |
+|                  | `style="height:400px"`          | set a height (CSS)                                                                |
+|                  | `data-map-style`                | style URL override                                                                |
+|                  | `data-map-zoom`                 | starting zoom                                                                     |
+|                  | `data-map-center="lat,lng"`     | skip auto-fit                                                                     |
+|                  | `data-map-maxzoom="12"`         | **cap** auto-fit zoom (NEW)                                                       |
+|                  | `data-map-token`                | per-map token                                                                     |
+|                  | `data-map-defaults='{…}'`       | JSON overrides                                                                    |
+|                  | `data-map-cluster`              | enable clustering                                                                 |
+|                  | `data-map-nav`                  | inject native zoom buttons                                                        |
+|                  | `data-map-popup="custom"`       | use **custom** pop-ups (NEW)                                                      |
+| **Pin item**     | `data-pin-lat` & `data-pin-lng` | **required** coords                                                               |
+|                  | `data-pin-icon`                 | custom marker icon                                                                |
+|                  | `data-pin-popup-align="left"`   | anchor (top, bottom, left, right, ­etc.) — works in custom & native pop-ups (NEW) |
+| Inner HTML       | becomes pop-up body             |                                                                                   |
+| **Zoom buttons** | `data-map-zoom="in"` / `out`    | triggers zoomIn / zoomOut                                                         |
+
+---
+
+### Example
 
 ```html
 <div data-mapbox data-map-style="mapbox://styles/mapbox/dark-v11"
-     data-map-cluster style="height:450px">
+     data-map-popup="custom"
+     data-map-cluster
+     style="height:450px">
 
   <!-- Custom zoom UI -->
   <button class="zoom-btn" data-map-zoom="in">+</button>
   <button class="zoom-btn" data-map-zoom="out">−</button>
 
-  <!-- CMS Collection List items could render exactly like this -->
+  <!-- CMS item 1 -->
   <div data-pin-lat="59.9139" data-pin-lng="10.7522"
        data-pin-icon="https://example.com/marker.svg"
-       data-pin-popup-align="right">
-    <h4>Oslo HQ</h4><p>Grensen 1,<br>0159 Oslo</p>
+       data-pin-popup-align="right"
+       class="card card--purple">
+    <h4>Oslo HQ</h4>
+    <p>Gaustadalléen 21<br>0349 Oslo</p>
   </div>
 
+  <!-- CMS item 2 -->
   <div data-pin-lat="60.3913" data-pin-lng="5.3221">
     Bergen office
   </div>
 </div>
 ```
 
----
-
-## 5  — Feature highlights
-
-* **Cooperative gestures** (Mapbox GL’s best-practice):
-
-  * Desktop — map zooms only with **Ctrl** (Win/Linux) or **⌘ Cmd** (macOS) + scroll; simple left-click drag is enabled.
-  * Touch — page scrolls with one finger; map pans/zooms with two fingers.
-* **Custom zoom buttons** — just add `data-map-zoom="in|out"`; style any way you like.
-* **Optional clustering** — add `data-map-cluster` or set `cluster:true` globally. Clusters are coloured circles that explode on click.
-* **Auto-fit** — if no explicit `data-map-center`, the map zooms to fit all pins with padding.
-* **Multi-map-safe** — every `[data-mapbox]` runs in its own scope; unlimited maps per page.
+*When `data-map-popup="custom"` is present the module clones each pin element exactly, keeping all combo classes (`card card--purple` above). A small “×” button is appended for closing.*
 
 ---
 
-## 6  — Overriding defaults per map
+## 5 — Feature highlights
 
-Need a different cluster colour or radius on a single map? Use the JSON blob:
+* **Cooperative gestures** – Mapbox’s best-practice input model.
+
+  * Desktop: hold **Ctrl** (Win/Linux) or **⌘** (macOS) while scrolling to zoom; drag-pan always on.
+  * Touch: one-finger scroll moves the page; two-finger pan/zoom moves the map.
+* **Custom zoom buttons** – any element with `data-map-zoom="in|out"`; or native buttons via `data-map-nav`.
+* **Optional clustering** – attribute or global default; clusters explode on click.
+* **Custom pop-ups** – clone the CMS element untouched, support all anchors, fully styleable.
+* **Auto-fit with max zoom** – prevents “street-level” zoom when there’s only one pin.
+* **Multi-map safe** – unlimited `[data-mapbox]` instances per page.
+
+---
+
+## 6 — Per-map overrides (JSON blob)
 
 ```html
 <div data-mapbox
-     data-map-cluster
      data-map-defaults='{
-       "clusterColor":"#f59e0b",
-       "clusterRadius":90,
-       "zoom":6
+       "fitBoundsMaxZoom": 11,
+       "clusterColor": "#f59e0b",
+       "clusterRadius": 90,
+       "zoom": 6
      }'
      style="height:400px"></div>
 ```
 
 ---
 
-## 7  — Troubleshooting
+## 7 — Troubleshooting
 
-| Issue                              | Fix                                                                                                |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Map is invisible (0 px height)     | Add an explicit `height` in CSS or inline.                                                         |
-| “Missing access token” error       | Ensure `window.MAPBOX_ACCESS_TOKEN` or `data-map-token` is set *before* the module runs.           |
-| Pins render but pop-ups don’t open | Confirm inner HTML isn’t empty and there are no JavaScript errors.                                 |
-| Custom icon not loading            | Check CORS (icon must allow cross-origin) and that the URL is correct/HTTPS.                       |
-| Clustering looks wrong             | Ensure Mapbox GL ≥ v1.12 (clusters need it) and check `clusterRadius` / `clusterMaxZoom` settings. |
+| Issue                       | Fix                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Map invisible (0 px height) | Give the wrapper a height in CSS/inline.                                                                 |
+| “Missing access token”      | Ensure the token is defined *before* the module runs (`window.MAPBOX_ACCESS_TOKEN` or `data-map-token`). |
+| Pop-ups don’t appear        | Confirm inner HTML isn’t empty and check console for JS errors.                                          |
+| Custom marker icon missing  | Check HTTPS URL + CORS.                                                                                  |
+| Clusters act weird          | Use Mapbox GL ≥ v1.12 and verify `clusterRadius` / `clusterMaxZoom`.                                     |
+| Auto-fit zooms too close    | Lower `fitBoundsMaxZoom` globally, per-map JSON, or `data-map-maxzoom`.                                  |
+
+---
+
+Happy mapping! Feel free to reach out for extras like heatmaps, style pickers, or lazy-loaded placeholder images.
