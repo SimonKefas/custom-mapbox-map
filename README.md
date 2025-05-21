@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Mapbox Attribute Module — README
 
 *Version v10-lite (May 21 2025)*
@@ -137,6 +136,3 @@ Need a different cluster colour or radius on a single map? Use the JSON blob:
 | Pins render but pop-ups don’t open | Confirm inner HTML isn’t empty and there are no JavaScript errors.                                 |
 | Custom icon not loading            | Check CORS (icon must allow cross-origin) and that the URL is correct/HTTPS.                       |
 | Clustering looks wrong             | Ensure Mapbox GL ≥ v1.12 (clusters need it) and check `clusterRadius` / `clusterMaxZoom` settings. |
-=======
-# custom-mapbox-map
->>>>>>> 5a159a24f246456d5933ce7635d3f82f95b72c93
