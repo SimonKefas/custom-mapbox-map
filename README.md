@@ -13,8 +13,7 @@ This document explains how to embed **multiple, CMS-driven Mapbox maps** in Webf
 <link
   rel="stylesheet"
   href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css">
-<script
-  src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
 ```
 
 ---
@@ -41,12 +40,10 @@ This document explains how to embed **multiple, CMS-driven Mapbox maps** in Webf
 
 ---
 
-## 3  — Add the **module script**
+## 3  — Add the **module script before body**
 
 ```html
-<!-- Custom Mapbox Code - (put in before </body>) -->
-<script
-  src="https://cdn.jsdelivr.net/gh/SimonKefas/custom-mapbox-map@latest/script.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/SimonKefas/custom-mapbox-map@latest/script.js"></script>
 ```
 
 ---
